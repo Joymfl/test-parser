@@ -10,7 +10,7 @@ fn main() {
     let reader = BufReader::new(file_name);
     let mut var_names = Vec::new();
     let mut fixed_point = Vec::new();
-    for (index, line) in reader.lines().enumerate() {
+    for line in reader.lines() {
         let line = line.unwrap();
         if line.contains(".rs:") {
             fixed_point.push(line);
@@ -20,15 +20,14 @@ fn main() {
     }
     let mut fin = Vec::new();
     let mut name_final = Vec::new();
-    let mut count = 0;
     for fixed in &fixed_point {
-        let mut first_byte = fixed.find('(');
         let new_string: Vec<&str> = fixed.split('(').collect();
         let final_val: Vec<&str> = new_string[1].split(',').collect();
-        let final_val = final_val[0].replace("_", "");
-        println!("{} count: {}", final_val, count);
-        count += 1;
-        fin.push(final_val.parse::<u32>().unwrap());
+        let final_val = final_val[0].replace('_', "");
+        let final_val: Vec<&str> = final_val.split(')').collect();
+        // let final_val = final_val.replace(']', "");
+        // println!("{}", final_val);
+        fin.push(final_val[0].parse::<u32>().unwrap());
     }
     for name in &var_names {
         let mut first_byte = name.find("pub").unwrap();
@@ -41,6 +40,8 @@ fn main() {
         name_final.push(final_text);
     }
     let mut line_num: usize;
+    println!("{}", name_final.len());
+    println!("{}", fin.len());
     if name_final.len() >= fin.len() {
         line_num = name_final.len();
     } else {
